@@ -1,2 +1,5 @@
+/.vscode
 /.venv
 /issue_tracking_tool/__pycache__
+/user_app/__pycache__
+/user_app/migrations/__pycache__
