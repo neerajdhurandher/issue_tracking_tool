@@ -5,7 +5,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.core import serializers
 from .serializer import User, UserSerializer
-from .auth_utils import generate_token, validate_token
 from .user_utils import UserUtils as user_utils
 import logging
 logger = logging.getLogger(__name__)
@@ -46,7 +45,7 @@ class LoginUser(APIView):
                     "token": login_data['msg']
                 }, status=status.HTTP_200_OK)
             else:
-                return Response(login_data['msg'],status=login_data['response_code'])
+                return Response(login_data['msg'], status=login_data['response_code'])
 
 
 class GetAllUsers(APIView):
@@ -56,5 +55,31 @@ class GetAllUsers(APIView):
 
 
 class GetUserByID(APIView):
-    def get(self, request):
-        user_id = request.data['id']
+    def get(self, request, user_id):
+        user_exits_value = user_utils.check_user_existence(id=user_id)
+
+        if user_exits_value is None:
+            return Response({"error": "User with this id doesn't exist"},
+                            status=status.HTTP_404_NOT_FOUND)
+        else:
+            user_details = user_exits_value.__dict__
+            del user_details['_state']
+            return Response(user_details, status=status.HTTP_200_OK)
+
+
+class DeleteUser(APIView):
+
+    def delete(self, request, user_id):
+        logger.info("inside delete fun.")
+        user = user_utils.check_user_existence(id=user_id)
+
+        if user is None:
+            return Response({"error": "The user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            user.delete()
+            return Response({"success": "yes"}, status=status.HTTP_200_OK)
+        except Exception as error:
+            logging.error(f"Exception in delete user API: {error}")
+            return Response("Error while deleting user.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    

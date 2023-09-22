@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Admin settings
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'admin'
+
 
 # Application definition
 

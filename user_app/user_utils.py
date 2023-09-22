@@ -29,15 +29,12 @@ class UserUtils():
     def check_user_existence(username=None, id=None):
         try:
             if id != None:
-                bool = get_object_or_404(User, id=id)
+                user = get_object_or_404(User, id=id)
             elif username != None and isinstance(username, str):
-                bool = User.objects.get(username=username)
+                user = User.objects.get(username=username)
             elif id != None and username != None and isinstance(username, str):
                 user = User.objects.get(id=id, username=username)
-                print(user)
-                bool = user
-
-            return bool
+            return user
         except User.DoesNotExist:
             return None
 
