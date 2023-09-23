@@ -4,3 +4,4 @@ django-rest-swagger==2.2.0
 djangorestframework==3.14.0
 drf-yasg==1.21.5
 virtualenv==20.23.0
+python-dateutil==1.16.0
