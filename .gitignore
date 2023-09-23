@@ -3,3 +3,6 @@
 /issue_tracking_tool/__pycache__
 /user_app/__pycache__
 /user_app/migrations/__pycache__
+/project_app/__pycache__
+/project_app/migrations/__pycache__
+/project_app/project/__pycache__
