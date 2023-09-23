@@ -3,8 +3,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.core import serializers
-from .serializer import User, UserSerializer
+from .serializer import User
 from .user_utils import UserUtils as user_utils
 import logging
 logger = logging.getLogger(__name__)
@@ -19,10 +18,7 @@ class LoginUser(APIView):
             request : The request object contains user details 
         """
 
-        user_data = {}
-        user_data['username'] = request.data.get('username')
-        user_data['password'] = request.data.get('password')
-        user_data['email'] = request.data.get('email')
+        user_data = request.data
 
         logger.info(f"user input : {user_data}")
 
@@ -65,9 +61,6 @@ class GetUserByID(APIView):
             user_details = user_exits_value.__dict__
             del user_details['_state']
             return Response(user_details, status=status.HTTP_200_OK)
-
-
-class DeleteUser(APIView):
 
     def delete(self, request, user_id):
         logger.info("inside delete fun.")

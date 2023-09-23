@@ -1,5 +1,4 @@
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 from .serializer import User, UserSerializer
 from .auth_utils import generate_token, validate_token, authenticate_user
 import logging
@@ -29,7 +28,7 @@ class UserUtils():
     def check_user_existence(username=None, id=None):
         try:
             if id != None:
-                user = get_object_or_404(User, id=id)
+                user = User.objects.get(id=id)
             elif username != None and isinstance(username, str):
                 user = User.objects.get(username=username)
             elif id != None and username != None and isinstance(username, str):
@@ -48,7 +47,7 @@ class UserUtils():
         auth_res = authenticate_user(user, user_data)
 
         if auth_res:
-            
+
             token = user.auth_token.key
             validated_user = validate_token(token)
             if validated_user == False:
