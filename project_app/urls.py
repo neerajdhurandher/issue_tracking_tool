@@ -5,6 +5,7 @@ from .sprint.views_sprint import Sprint, SprintById
 from .issue.views_issue import Issue
 from .issue.views_watcher import Watcher
 from .comment.views_comment import Comment
+from .label.views_label import Label
 
 urlpatterns = [
     path("projects", Project.as_view(), name="Projects"),
@@ -23,5 +24,7 @@ urlpatterns = [
     path("watchers/<str:watcher_id>", Watcher.as_view(), name="watcher by id"),
     path("comments", Comment.as_view(), name="Comment"),
     path("comment/<str:comment_id>", Comment.as_view(), name="comment by id"),
+    path("labels", Label.as_view(), name="Label"),
+    path("label/<str:label_id>", Label.as_view(), name="label by id"),
 
 ]

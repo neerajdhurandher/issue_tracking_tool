@@ -150,3 +150,22 @@ class Comment(BaseModel):
             else:
                 self.id = 'comment_id_1'
         return super().save(*args, **kwargs)
+
+
+class Label(BaseModel):
+
+    id = models.CharField(max_length=100,
+                          unique=True, editable=False, primary_key=True)
+    issue = ForeignKey(Issue, on_delete=models.CASCADE, null=False)
+    label = models.CharField(max_length=200, null=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            last_label_id = self.__class__.objects.order_by(
+                '-id').values_list('id', flat=True).first()
+            if last_label_id:
+                last_label_id = int(last_label_id.split('_')[2])
+                self.id = f'label_id_{last_label_id + 1}'
+            else:
+                self.id = 'label_id_1'
+        return super().save(*args, **kwargs)
