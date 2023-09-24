@@ -18,6 +18,7 @@ urlpatterns = [
     path("sprint/<str:sprint_id>", SprintById.as_view(), name="Sprints"),
     path("issues", Issue.as_view(), name="Issue"),
     path("issue/<str:issue_id>", Issue.as_view(), name="Update Issue status"),
-    path("watchers", Watcher.as_view(), name="Create watcher"),
+    path("watchers", Watcher.as_view(), name="Watcher"),
+    path("watchers/<str:watcher_id>", Watcher.as_view(), name="watcher by id"),
 
 ]
