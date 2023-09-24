@@ -1,4 +1,3 @@
-
 # Issue Tracking Tool
 
 ## Overview
@@ -49,10 +48,6 @@ The Project app is responsible for managing all project-related functionalities.
 1. `views_label.py`: Views for managing labels within a project.
 2. `serializers_label.py`: Serializers for label information.
 
-### Utils Folder
-
-1. `utils.py`: Contains utility functions used by the project app.
-
 #### model.py
 
 * `BaseModel`
@@ -64,17 +59,19 @@ The Project app is responsible for managing all project-related functionalities.
 * `CommentModel`
 * `LabelModel`
 
+`utils.py`: Contains utility functions used by the project app.
+
+`constant.py`: Contains constant values used by the project app.
+
 ## Django Default Files and Folders
 
 In addition to the above files and folders specific to the application, Django includes default files and folders that are required for the application's functionality. Some of the important default files and folders are:
 
 1. `manage.py`: The command-line utility for managing Django projects.
-2. `settings.py`: Configuration settings for the Django application.
-3. `urls.py`: Contains the primary URL routing configuration for the project.
-4. `wsgi.py`: The entry point for the WSGI-compatible web server.
-5. `static/`: Contains static files such as CSS, JavaScript, and images.
-6. `templates/`: Contains HTML templates for rendering views.
-7. `migrations/`: Stores database migrations to manage schema changes over time.
+2. `admin.py`: Contains admin configurations for the Django application.
+3. `settings.py`: Configuration settings for the Django application.
+4. `urls.py`: Contains the primary URL routing configuration for the project.
+5. `migrations/`: Stores database migrations to manage schema changes over time.
 
 ## Conclusion
 
