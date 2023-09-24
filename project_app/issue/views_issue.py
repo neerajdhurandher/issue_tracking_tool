@@ -7,13 +7,14 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ..utils import Utils
 from .issue_serializer import IssueSerializer
-from ..models import Issue as IssueModel, Sprint as SprintModel, Project as ProjectModel
+from ..models import Issue as IssueModel, Sprint as SprintModel, Project as ProjectModel, User as UserModel
 from ..constants import pagination_limit
+from ..project.project_utils import ProjectUtils
 import logging
 logger = logging.getLogger(__name__)
 
 
-class Issue(APIView):
+class IssueView(APIView):
     def post(self, request):
         issue_data = request.data
 
@@ -79,10 +80,11 @@ class Issue(APIView):
             return Response({'error': 'The issue does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
         issue_status = request.GET.get('status')
-
-        logger.info(f"issue status {issue_status}  {type(issue_status)}")
+        user_id = request.GET.get('assignee')
 
         if not issue_status:
+            if user_id:
+                return self.assign_user_to_issue(issue_id, user_id)
             return Response({"error": "Params not passed properly"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -111,3 +113,35 @@ class Issue(APIView):
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except IssueModel.DoesNotExist:
             return Response({"error": "The issue does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+    def assign_user_to_issue(self, issue_id, user_id):
+
+        user_existence = Utils.get_object_by_id(UserModel, user_id)
+        if user_existence['status'] is False:
+            return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
+        issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
+        issue_sprint_id = issue_existence['data']['sprint_id']
+
+        sprint_obj = Utils.get_object_by_id(SprintModel, issue_sprint_id)
+
+        project_id = sprint_obj['data']['project_id']
+
+        user_project_relation_existence = ProjectUtils.user_existence_in_project(
+            user_id, project_id)
+
+        if user_project_relation_existence:
+            is_user_active = ProjectUtils.get_user_status_in_project(
+                user_id, project_id)
+            if is_user_active:
+                issue_update = IssueModel.objects.get(id=issue_id)
+                user_obj = UserModel.objects.get(id=user_id)
+                issue_update.assignee = user_obj
+                issue_update.save()
+                updated_issue = issue_update.__dict__
+                del updated_issue['_state']
+                return Response(updated_issue, status=status.HTTP_201_CREATED)
+                
+            else:
+                return Response({'error': 'User is not active in this project'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'User is not a part of this project'}, status=status.HTTP_400_BAD_REQUEST)

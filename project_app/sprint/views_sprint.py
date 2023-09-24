@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Sprint(APIView):
+class SprintView(APIView):
     def post(self, request):
         sprint_data = request.data
         project_id = sprint_data['project']
@@ -37,7 +37,7 @@ class Sprint(APIView):
         return Response(all_sprints.values(), status=status.HTTP_200_OK)
 
 
-class SprintById(APIView):
+class SprintByIdView(APIView):
 
     def get(self, request, sprint_id):
         try:
