@@ -4,6 +4,7 @@ from .project.views_user_project_relation import UserProjectRelation, UserProjec
 from .sprint.views_sprint import Sprint, SprintById
 from .issue.views_issue import Issue
 from .issue.views_watcher import Watcher
+from .comment.views_comment import Comment
 
 urlpatterns = [
     path("projects", Project.as_view(), name="Projects"),
@@ -20,5 +21,7 @@ urlpatterns = [
     path("issue/<str:issue_id>", Issue.as_view(), name="Update Issue status"),
     path("watchers", Watcher.as_view(), name="Watcher"),
     path("watchers/<str:watcher_id>", Watcher.as_view(), name="watcher by id"),
+    path("comments", Comment.as_view(), name="Comment"),
+    path("comment/<str:comment_id>", Comment.as_view(), name="comment by id"),
 
 ]

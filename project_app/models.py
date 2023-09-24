@@ -115,10 +115,9 @@ class Watcher(BaseModel):
 
     id = models.CharField(max_length=100,
                           unique=True, editable=False, primary_key=True)
-    issue = ForeignKey(Issue, on_delete=models.CASCADE, null=True)
-    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
+    issue = ForeignKey(Issue, on_delete=models.CASCADE, null=False)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=False)
     is_active = models.BooleanField(null=False, default=True)
-
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -129,4 +128,25 @@ class Watcher(BaseModel):
                 self.id = f'watcher_id_{last_watcher_id + 1}'
             else:
                 self.id = 'watcher_id_1'
+        return super().save(*args, **kwargs)
+
+
+class Comment(BaseModel):
+
+    id = models.CharField(max_length=100,
+                          unique=True, editable=False, primary_key=True)
+    issue = ForeignKey(Issue, on_delete=models.CASCADE, null=False)
+    user = ForeignKey(User, on_delete=models.SET_DEFAULT,
+                      null=False, default="Unknown user")
+    comment = models.TextField(null=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            last_comment_id = self.__class__.objects.order_by(
+                '-id').values_list('id', flat=True).first()
+            if last_comment_id:
+                last_comment_id = int(last_comment_id.split('_')[2])
+                self.id = f'comment_id_{last_comment_id + 1}'
+            else:
+                self.id = 'comment_id_1'
         return super().save(*args, **kwargs)
