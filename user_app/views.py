@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from .serializer import User
 from .user_utils import UserUtils as user_utils
+from .models import User as UserModel
 import logging
 logger = logging.getLogger(__name__)
 
@@ -63,16 +64,10 @@ class GetUserByID(APIView):
             return Response(user_details, status=status.HTTP_200_OK)
 
     def delete(self, request, user_id):
-        logger.info("inside delete fun.")
-        user = user_utils.check_user_existence(id=user_id)
-
-        if user is None:
+        try:
+            user_obj = UserModel.objects.get(id=user_id)
+            user_obj.delete()
+            return Response({"success": "yes"}, status=status.HTTP_200_OK)
+        except UserModel.DoesNotExist:
             return Response({"error": "The user does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            user.delete()
-            return Response({"success": "yes"}, status=status.HTTP_200_OK)
-        except Exception as error:
-            logging.error(f"Exception in delete user API: {error}")
-            return Response("Error while deleting user.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
