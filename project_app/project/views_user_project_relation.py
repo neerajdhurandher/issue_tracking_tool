@@ -1,10 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.exceptions import NotFound, ValidationError
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from ..utils import Utils
 from ..models import Project as ProjectModel, User as UserModel, UserProjectRelation as UserProjectRelationModel
 from .user_project_relation_serializer import UserProjectRelationSerializer
@@ -49,22 +45,12 @@ class UserProjectRelation(APIView):
                     valid_relation_data.append(serializer.data)
             else:
                 already_exists_user.append(user_id)
-        return Response({"success": "True", "data": valid_relation_data, "invalid user": invalid_user, "already exited user in project": already_exists_user})
+        return Response({"success": "True", "data": valid_relation_data, "invalid user": invalid_user, "already exited user in project": already_exists_user},status=status.HTTP_201_CREATED)
 
     def get(self, request):
         all = UserProjectRelationModel.objects.all()
         return Response(all.values(), status=status.HTTP_200_OK)
 
-    def get(self, request, project_id):
-        project_existence = Utils.get_object_by_id(ProjectModel, project_id)
-
-        if project_existence['status'] is False:
-            return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-        all_users_of_project = ProjectUtils.get_all_users_of_a_project(
-            project_id)
-
-        return Response(all_users_of_project.values(), status=status.HTTP_200_OK)
 
     def put(self, request):
         """This API is for update user of a project
@@ -110,8 +96,8 @@ class UserProjectRelation(APIView):
         except Exception as error:
             return Response(f"Error while changing user status in project. {error}", status=525)
 
-    def delete(self, request, project_id):
-        user_project_relation_id = project_id
+    def delete(self, request, userprojectrelation_id):
+        user_project_relation_id = userprojectrelation_id
 
         try:
             user_project_relation_obj = UserProjectRelationModel.objects.get(
@@ -120,3 +106,15 @@ class UserProjectRelation(APIView):
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except UserProjectRelationModel.DoesNotExist:
             return Response({"error": "The user project relation does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+class UserProjectRelationByID(APIView):
+    def get(self, request, project_id):
+        project_existence = Utils.get_object_by_id(ProjectModel, project_id)
+
+        if project_existence['status'] is False:
+            return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        all_users_of_project = ProjectUtils.get_all_users_of_a_project(
+            project_id)
+
+        return Response(all_users_of_project.values(), status=status.HTTP_200_OK)

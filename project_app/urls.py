@@ -1,6 +1,6 @@
 from django.urls import path
 from .project.views_project import Project, ProjectByID
-from .project.views_user_project_relation import UserProjectRelation
+from .project.views_user_project_relation import UserProjectRelation, UserProjectRelationByID
 from .sprint.views_sprint import Sprint, SprintById
 from .issue.views_issue import Issue
 from .issue.views_watcher import Watcher
@@ -10,8 +10,10 @@ urlpatterns = [
     path("project/<str:project_id>", ProjectByID.as_view(), name="Project by ID"),
     path("userprojectrelation", UserProjectRelation.as_view(),
          name="Create user project relation"),
-    path("userprojectrelation/<str:project_id>", UserProjectRelation.as_view(),
+    path("userprojectrelation/<str:project_id>", UserProjectRelationByID.as_view(),
          name="get all user of a project view"),
+    path("userprojectrelation/<str:userprojectrelation_id>", UserProjectRelation.as_view(),
+         name="delete user_project_relation view"),
     path("sprints", Sprint.as_view(), name="Sprints"),
     path("sprint/<str:sprint_id>", SprintById.as_view(), name="Sprints"),
     path("issues", Issue.as_view(), name="Issue"),
