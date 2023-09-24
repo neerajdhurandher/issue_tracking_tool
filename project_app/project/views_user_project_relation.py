@@ -10,13 +10,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UserProjectRelation(APIView):
+class UserProjectRelationView(APIView):
     def post(self, request):
         request_data = request.data
         project_id = request_data['project']
         user = request_data['user']
 
-        if not user and not project_id:
+        if not user or not project_id:
             return Response({"success": "False"}, status=status.HTTP_400_BAD_REQUEST)
 
         project_existence = Utils.get_object_by_id(ProjectModel, project_id)
@@ -45,7 +45,7 @@ class UserProjectRelation(APIView):
                     valid_relation_data.append(serializer.data)
             else:
                 already_exists_user.append(user_id)
-        return Response({"success": "True", "data": valid_relation_data, "invalid user": invalid_user, "already exited user in project": already_exists_user},status=status.HTTP_201_CREATED)
+        return Response({"success": "True", "data": valid_relation_data},status=status.HTTP_201_CREATED)
 
     def get(self, request):
         all = UserProjectRelationModel.objects.all()
@@ -107,7 +107,7 @@ class UserProjectRelation(APIView):
         except UserProjectRelationModel.DoesNotExist:
             return Response({"error": "The user project relation does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
-class UserProjectRelationByID(APIView):
+class UserProjectRelationByIDView(APIView):
     def get(self, request, project_id):
         project_existence = Utils.get_object_by_id(ProjectModel, project_id)
 

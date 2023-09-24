@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Label(APIView):
+class LabelView(APIView):
     def post(self, request):
         issue_id = request.data.get('issue')
         label_text = request.data.get('label')

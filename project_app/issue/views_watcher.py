@@ -9,12 +9,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Watcher(APIView):
+class WatcherView(APIView):
     def post(self, request):
         issue_id = request.data.get('issue')
         user_id = request.data.get('user')
 
-        if not issue_id and not user_id:
+        if not issue_id or not user_id:
             return Response({"issue/user field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)

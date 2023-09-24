@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Project(APIView):
+class ProjectView(APIView):
     def post(self, request):
         """This API is to create a project
         Args:
@@ -41,7 +41,7 @@ class Project(APIView):
         return Response(all_projects.values(), status=status.HTTP_200_OK)
 
 
-class ProjectByID(APIView):
+class ProjectByIDView(APIView):
     def get(self, request, project_id):
         """This API is to get projects of given project_id
         Args:

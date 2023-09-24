@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Comment(APIView):
+class CommentView(APIView):
     def post(self, request):
         issue_id = request.data.get('issue')
         user_id = request.data.get('user')
