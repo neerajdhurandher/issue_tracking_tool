@@ -1,26 +1,24 @@
 from ..models import Project
 from dateutil.parser import isoparse
+from ..models import UserProjectRelation
+from django.db.models import Q
 
 
 class ProjectUtils():
 
-    def validate_datetime_format(date_string):
+    def user_existence_in_project(user_obj, project_obj):
         try:
-            isoparse(date_string)
-
+            data = UserProjectRelation.objects.filter(
+                Q(project=project_obj) & Q(user=user_obj))
+            if len(data) == 0:
+                return False
             return True
-        except ValueError:
+        except Exception as error:
             return False
 
-    def get_all_projects():
-        all_projects = Project.objects.all()
-        return all_projects.values()
-
-    def get_project_by_id(project_id):
+    def get_all_users_of_a_project(project_id):
         try:
-            project = Project.objects.get(id=project_id)
-            project_data = project.__dict__
-            del project_data['_state']
-            return ({'status': True, 'data': project_data})
-        except Project.DoesNotExist:
-            return ({'status': False, "error": "The project does not exist"})
+            all_users = UserProjectRelation.objects.filter(project=project_id)
+            return all_users
+        except Exception as error:
+            return None

@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from ..project.project_utils import ProjectUtils
+from ..utils import Utils
 from .sprint_serializer import SprintSerializer
-from ..models import Sprint as SprintModel
+from ..models import Sprint as SprintModel, Project as ProjectModel
 import logging
 logger = logging.getLogger(__name__)
 
@@ -15,15 +15,15 @@ class Sprint(APIView):
         if project_id is None:
             return Response({"project": "This field may not be blank"}, status=status.HTTP_400_BAD_REQUEST)
 
-        project_exits = ProjectUtils.get_project_by_id(project_id)
+        project_exits = Utils.get_object_by_id(ProjectModel, project_id)
         if project_exits['status'] == False:
             Response(project_exits['data'], status=status.HTTP_404_NOT_FOUND)
 
-        if ProjectUtils.validate_datetime_format(
+        if Utils.validate_datetime_format(
                 sprint_data['start_date']) == False:
             return Response({'start_date': f"Datetime has wrong format. Use one of these 	formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]. your data is {sprint_data['start_date']}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if ProjectUtils.validate_datetime_format(
+        if Utils.validate_datetime_format(
                 sprint_data['end_date']) == False:
             return Response({'end_date': f"Datetime has wrong format. Use one of these 	formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]. your data is {sprint_data['end_date']}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -35,9 +35,10 @@ class Sprint(APIView):
     def get(self, request):
         all_sprints = SprintModel.objects.all()
         return Response(all_sprints.values(), status=status.HTTP_200_OK)
-    
+
+
 class SprintById(APIView):
-    
+
     def get(self, request, sprint_id):
         try:
             sprint = SprintModel.objects.get(id=sprint_id)
@@ -46,7 +47,7 @@ class SprintById(APIView):
             return Response(sprint_data, status=status.HTTP_200_OK)
         except SprintModel.DoesNotExist:
             return Response({"error": "The sprint does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    
+
     def delete(self, request, sprint_id):
         """This API is to delete sprints of given sprint_id
         Args:
@@ -60,4 +61,3 @@ class SprintById(APIView):
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except SprintModel.DoesNotExist:
             return Response({"error": "The sprint does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
