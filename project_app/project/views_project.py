@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from .project_serializer import ProjectSerializer
-from .project_utils import ProjectUtils
-from ..models import Project as Project_Model
+from ..utils import Utils
+from ..models import Project as ProjectModel
 
 import logging
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class Project(APIView):
         if project_details['name'] is None or "":
             return Response({'name': ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
 
-        valid_date_form = ProjectUtils.validate_datetime_format(
+        valid_date_form = Utils.validate_datetime_format(
             project_details['start_date'])
 
         if valid_date_form == False:
@@ -37,8 +37,8 @@ class Project(APIView):
         Args:
             request : None
         """
-        all_projects = ProjectUtils.get_all_projects()
-        return Response(all_projects, status=status.HTTP_200_OK)
+        all_projects = ProjectModel.objects.all()
+        return Response(all_projects.values(), status=status.HTTP_200_OK)
 
 
 class ProjectByID(APIView):
@@ -50,11 +50,11 @@ class ProjectByID(APIView):
         """
         logger.info(f"project id {project_id}")
         try:
-            project = Project_Model.objects.get(id=project_id)
+            project = ProjectModel.objects.get(id=project_id)
             project_data = project.__dict__
             del project_data['_state']
             return Response(project_data, status=status.HTTP_200_OK)
-        except Project_Model.DoesNotExist:
+        except ProjectModel.DoesNotExist:
             return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, project_id):
@@ -65,8 +65,8 @@ class ProjectByID(APIView):
         """
         logger.info(f"project id {project_id}")
         try:
-            project = Project_Model.objects.get(id=project_id)
+            project = ProjectModel.objects.get(id=project_id)
             project.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
-        except Project_Model.DoesNotExist:
+        except ProjectModel.DoesNotExist:
             return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)

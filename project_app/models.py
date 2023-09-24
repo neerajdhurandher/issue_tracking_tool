@@ -39,6 +39,26 @@ class Project(models.Model):
         return super().save(*args, **kwargs)
 
 
+class UserProjectRelation(BaseModel):
+    id = models.CharField(max_length=100,
+                          unique=True, editable=False, primary_key=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=False)
+    project = ForeignKey(Project, on_delete=models.CASCADE, null=False)
+    is_active = models.BooleanField(null=False, default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            last_user_project_relation_id = self.__class__.objects.order_by(
+                '-id').values_list('id', flat=True).first()
+            if last_user_project_relation_id:
+                last_user_project_relation_id = int(
+                    last_user_project_relation_id.split('_')[2])
+                self.id = f'user_project_relation_id_{last_user_project_relation_id + 1}'
+            else:
+                self.id = 'user_project_relation_id_1'
+        return super().save(*args, **kwargs)
+
+
 class Sprint(BaseModel):
     id = models.CharField(max_length=100,
                           unique=True, editable=False, primary_key=True)
@@ -99,16 +119,14 @@ class Watcher(BaseModel):
     user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(null=False, default=True)
 
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_issue_id = self.__class__.objects.order_by(
+            last_watcher_id = self.__class__.objects.order_by(
                 '-id').values_list('id', flat=True).first()
-            if last_issue_id:
-                last_issue_id = int(last_issue_id.split('_')[2])
-                self.id = f'issue_id_{last_issue_id + 1}'
+            if last_watcher_id:
+                last_watcher_id = int(last_watcher_id.split('_')[2])
+                self.id = f'watcher_id_{last_watcher_id + 1}'
             else:
-                self.id = 'issue_id_1'
+                self.id = 'watcher_id_1'
         return super().save(*args, **kwargs)
