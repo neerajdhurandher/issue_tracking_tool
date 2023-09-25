@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import NotFound, ValidationError
 from django.http import Http404
@@ -15,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class IssueView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         issue_data = request.data
 
@@ -178,7 +183,9 @@ class IssueView(APIView):
 
 
 class MultipleQueryIssueList(APIView):
-
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         try:
             data = request.GET

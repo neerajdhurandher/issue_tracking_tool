@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from ..utils import Utils
 from ..models import Issue as IssueModel, Label as LabelModel
 from .label_serializer import LabelSerializer
@@ -9,6 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class LabelView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         issue_id = request.data.get('issue')
         label_text = request.data.get('label')
