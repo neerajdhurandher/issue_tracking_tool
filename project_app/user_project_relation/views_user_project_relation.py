@@ -17,6 +17,14 @@ class UserProjectRelationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """This function is used for create relation between given user & project
+
+        Args:
+            request: it contain user id & project id
+
+        Returns:
+            Response: created user project relation details
+        """
         request_data = request.data
         project_id = request_data['project']
         user = request_data['user']
@@ -58,6 +66,14 @@ class UserProjectRelationView(APIView):
         return Response({"success": "True", "data": valid_relation_data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, id=None, *args, **kwargs):
+        """This function is used for get list of all users or of given project id
+
+        Args:
+            id (str): project id or Defaults to None.
+
+        Returns:
+            Response: List of user-project-relation or all user of given project id
+        """
         project_id = id
         logger.info(f"inside get {id}")
         if project_id is None:
@@ -81,7 +97,7 @@ class UserProjectRelationView(APIView):
             return Response({"error": "error while fetching user project relation data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request):
-        """This API is for update user of a project
+        """This function is for update user of a project
 
         Args:
             request (_type_): _description_
@@ -125,6 +141,13 @@ class UserProjectRelationView(APIView):
             return Response(f"Error while changing user status in project. {error}", status=525)
 
     def delete(self, request, id):
+        """This function is to delete user-project-relation of given id
+        Args:
+            request : None
+            id (str): user-project-relation id
+        Returns:
+            Response: Delete operation status yes/error
+        """
         user_project_relation_id = id
 
         try:

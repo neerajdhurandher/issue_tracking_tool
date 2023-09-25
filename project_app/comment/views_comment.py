@@ -14,8 +14,13 @@ logger = logging.getLogger(__name__)
 class CommentView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
+        """This function is used for create comment in given issue.
+
+        Returns:
+            Response: created comment details
+        """
         issue_id = request.data.get('issue')
         user_id = request.data.get('user')
         comment_text = request.data.get('comment')
@@ -53,10 +58,22 @@ class CommentView(APIView):
         return Response({'error': 'User is not a part of this project'}, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
+        """This function is used for retrieve all comments
+
+        Returns:
+           Response: list of comments
+        """
         all_comments = CommentModel.objects.all()
         return Response(all_comments.values(), status=status.HTTP_200_OK)
 
     def delete(self, request, comment_id):
+        """This function is used for delete comment of given id. 
+
+        Args:
+            comment_id (str): This comment id of to be deleted Comment
+        Returns:
+            Response: Delete operation status yes/error
+        """
         try:
             comment_obj = CommentModel.objects.get(
                 id=comment_id)

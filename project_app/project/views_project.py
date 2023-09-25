@@ -17,9 +17,11 @@ class ProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        """This API is to create a project
+        """This function is to create a project
         Args:
-            request : The request object contain project details
+            request : The request object contain details for create project
+        Return:
+            Response: created project details
         """
         project_details = request.data
 
@@ -38,9 +40,11 @@ class ProjectView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request, project_id=None, *args, **kwargs):
-        """This API is to get all projects
+        """This function is to get all projects
         Args:
             request : project_id/None
+        Return:
+            Response: List/Single project details
         """
         if not project_id:
             all_projects = ProjectModel.objects.all()
@@ -55,10 +59,12 @@ class ProjectView(APIView):
                 return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, project_id):
-        """This API is to delete projects of given project_id
+        """This function is to delete projects of given project_id
         Args:
             request : None
             project_id (str): Project id
+        Returns:
+            Response: Delete operation status yes/error
         """
         logger.info(f"project id {project_id}")
         try:

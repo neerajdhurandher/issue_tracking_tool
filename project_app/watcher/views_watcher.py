@@ -16,6 +16,13 @@ class WatcherView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """This function is used to create watcher to given user for a given issue.  
+
+        Args:
+            request: it contain user id & issue id
+        Returns:
+            Response: created watcher details
+        """
         issue_id = request.data.get('issue')
         user_id = request.data.get('user')
 
@@ -60,10 +67,23 @@ class WatcherView(APIView):
         return Response("ok", 200)
 
     def get(self, request):
+        """This function is used for get all watcher list
+
+        Returns:
+            Response: List of watchers.
+        """
         all_watchers = WatcherModel.objects.all()
         return Response(all_watchers.values(), status=status.HTTP_200_OK)
 
     def put(self, request):
+        """This function is used for update user status in watcher
+
+        Args:
+            request : it contain user id & issue id
+
+        Returns:
+            Response : updated watcher details
+        """
         user_id = request.GET.get('user')
         issue_id = request.GET.get('issue')
 
@@ -88,7 +108,13 @@ class WatcherView(APIView):
             return Response(f"Error while changing user's watching status in issue. {error}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, watcher_id):
-
+        """This function is to delete watcher of given sprint_id
+        Args:
+            request : None
+            watcher_id (str): watcher id
+        Returns:
+            Response: Delete operation status yes/error
+        """
         try:
             watcher_obj = WatcherModel.objects.get(
                 id=watcher_id)
