@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from ..utils import Utils
 from ..models import Project as ProjectModel, User as UserModel, UserProjectRelation as UserProjectRelationModel
 from .user_project_relation_serializer import UserProjectRelationSerializer
-from .project_utils import ProjectUtils
+from ..project.project_utils import ProjectUtils
 
 import logging
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class UserProjectRelationView(APIView):
         if project_existence['status'] is False:
             return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        if isinstance(user, str):
+        if isinstance(user, str) or isinstance(user, int):
             user_list = [user]
         else:
             user_list = user
@@ -39,18 +39,41 @@ class UserProjectRelationView(APIView):
                 invalid_user.append(user_id)
             elif ProjectUtils.user_existence_in_project(user_id, project_id) == False:
                 serializer = UserProjectRelationSerializer(
-                    data=request_data)
+                    data={
+                        "project": project_id,
+                        "user": user_id
+                    })
                 if serializer.is_valid():
                     serializer.save()
                     valid_relation_data.append(serializer.data)
             else:
                 already_exists_user.append(user_id)
-        return Response({"success": "True", "data": valid_relation_data},status=status.HTTP_201_CREATED)
+        logger.info(f"invalid users {invalid_user}")
+        logger.info(f"users already exits in project  {already_exists_user}")
+        return Response({"success": "True", "data": valid_relation_data}, status=status.HTTP_201_CREATED)
 
-    def get(self, request):
-        all = UserProjectRelationModel.objects.all()
-        return Response(all.values(), status=status.HTTP_200_OK)
+    def get(self, request, id=None, *args, **kwargs):
+        project_id = id
+        logger.info(f"inside get {id}")
+        if project_id is None:
+            all = UserProjectRelationModel.objects.all()
+            return Response(all.values(), status=status.HTTP_200_OK)
 
+        try:
+            project_existence = Utils.get_object_by_id(
+                ProjectModel, project_id)
+
+            if project_existence['status'] is False:
+                return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+            all_users_of_project = ProjectUtils.get_all_users_of_a_project(
+                project_id)
+
+            return Response(all_users_of_project.values(), status=status.HTTP_200_OK)
+        except Exception as error:
+            logger.info(
+                f"error while fetching user project relation data. Error : {error}")
+            return Response({"error": "error while fetching user project relation data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request):
         """This API is for update user of a project
@@ -96,8 +119,8 @@ class UserProjectRelationView(APIView):
         except Exception as error:
             return Response(f"Error while changing user status in project. {error}", status=525)
 
-    def delete(self, request, userprojectrelation_id):
-        user_project_relation_id = userprojectrelation_id
+    def delete(self, request, id):
+        user_project_relation_id = id
 
         try:
             user_project_relation_obj = UserProjectRelationModel.objects.get(
@@ -106,15 +129,7 @@ class UserProjectRelationView(APIView):
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except UserProjectRelationModel.DoesNotExist:
             return Response({"error": "The user project relation does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
-class UserProjectRelationByIDView(APIView):
-    def get(self, request, project_id):
-        project_existence = Utils.get_object_by_id(ProjectModel, project_id)
-
-        if project_existence['status'] is False:
-            return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-        all_users_of_project = ProjectUtils.get_all_users_of_a_project(
-            project_id)
-
-        return Response(all_users_of_project.values(), status=status.HTTP_200_OK)
+        except Exception as error:
+            logger.info(
+                f"error while deleting user project relation data. Error : {error}")
+            return Response({"error": "error while deleting user project relation data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

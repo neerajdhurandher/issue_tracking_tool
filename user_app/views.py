@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LoginUser(APIView):
+class LoginUserView(APIView):
 
     def post(self, request):
         """This API is to create a user.
@@ -45,13 +45,13 @@ class LoginUser(APIView):
                 return Response(login_data['msg'], status=login_data['response_code'])
 
 
-class GetAllUsers(APIView):
+class GetAllUsersView(APIView):
     def get(self, request):
         all_user = User.objects.all()
         return Response(all_user.values(), status=status.HTTP_200_OK)
 
 
-class GetUserByID(APIView):
+class UserView(APIView):
     def get(self, request, user_id):
         user_exits_value = user_utils.check_user_existence(id=user_id)
 

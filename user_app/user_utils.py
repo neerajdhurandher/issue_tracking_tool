@@ -9,7 +9,6 @@ class UserUtils():
     def create_user(user_data):
 
         serializer = UserSerializer(data=user_data)
-        logger.info(f"serializer is_valid : {serializer.is_valid()}")
 
         if serializer.is_valid():
 

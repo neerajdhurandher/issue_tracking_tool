@@ -32,30 +32,22 @@ class ProjectView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def get(self, request):
+    def get(self, request, project_id=None, *args, **kwargs):
         """This API is to get all projects
         Args:
-            request : None
+            request : project_id/None
         """
-        all_projects = ProjectModel.objects.all()
-        return Response(all_projects.values(), status=status.HTTP_200_OK)
-
-
-class ProjectByIDView(APIView):
-    def get(self, request, project_id):
-        """This API is to get projects of given project_id
-        Args:
-            request : None
-            project_id (str): Project id
-        """
-        logger.info(f"project id {project_id}")
-        try:
-            project = ProjectModel.objects.get(id=project_id)
-            project_data = project.__dict__
-            del project_data['_state']
-            return Response(project_data, status=status.HTTP_200_OK)
-        except ProjectModel.DoesNotExist:
-            return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        if not project_id:
+            all_projects = ProjectModel.objects.all()
+            return Response(all_projects.values(), status=status.HTTP_200_OK)
+        else:
+            try:
+                project = ProjectModel.objects.get(id=project_id)
+                project_data = project.__dict__
+                del project_data['_state']
+                return Response(project_data, status=status.HTTP_200_OK)
+            except ProjectModel.DoesNotExist:
+                return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, project_id):
         """This API is to delete projects of given project_id
