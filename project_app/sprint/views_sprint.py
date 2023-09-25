@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from ..utils import Utils
 from .sprint_serializer import SprintSerializer
 from ..models import Sprint as SprintModel, Project as ProjectModel, Issue as IssueModel
@@ -9,6 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class SprintView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         sprint_data = request.data
         project_id = sprint_data['project']

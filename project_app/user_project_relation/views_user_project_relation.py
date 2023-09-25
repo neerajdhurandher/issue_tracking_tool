@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from ..utils import Utils
 from ..models import Project as ProjectModel, User as UserModel, UserProjectRelation as UserProjectRelationModel
 from .user_project_relation_serializer import UserProjectRelationSerializer
@@ -11,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class UserProjectRelationView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         request_data = request.data
         project_id = request_data['project']
