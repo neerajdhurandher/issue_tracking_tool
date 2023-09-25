@@ -1,6 +1,7 @@
 from rest_framework import status
 from .serializer import User, UserSerializer
-from .auth_utils import generate_token, validate_token, authenticate_user
+from .auth_utils import generate_token
+from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
@@ -11,9 +12,7 @@ class UserUtils():
         serializer = UserSerializer(data=user_data)
 
         if serializer.is_valid():
-
             new_created_user = serializer.save()
-
             # token generate for current user
             token = generate_token(new_created_user)
 
@@ -38,19 +37,20 @@ class UserUtils():
 
     def user_login(user_data):
 
-        user = User.objects.get(username=user_data.get('username'))
+        user_obj = User.objects.get(username=user_data.get('username'))
 
-        if user is None:
-            return {'status': False, 'msg': "invalid username. User not found.", 'response_code': status.HTTP_400_BAD_REQUEST}
+        logger.info(f"input {user_data['password']}")
+        logger.info(f"stored {user_obj.password}")
 
-        auth_res = authenticate_user(user, user_data)
+        logger.info(f"user pass {user_obj.has_usable_password()}")
 
+        auth_res = True if user_data['password'] == user_obj.password else False
+
+        logger.info(f"auth {auth_res}")
         if auth_res:
-
-            token = user.auth_token.key
-            validated_user = validate_token(token)
-            if validated_user == False:
-                token = generate_token(user=user)
+            token = user_obj.auth_token.key
+            user_obj.last_login = datetime.now()
+            user_obj.save()
             return {'status': True, 'msg': token, 'response_code': status.HTTP_200_OK}
         else:
             return {'status': False, 'msg': "invalid password.", 'response_code': status.HTTP_401_UNAUTHORIZED}
