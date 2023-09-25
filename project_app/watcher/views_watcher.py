@@ -35,6 +35,10 @@ class WatcherView(APIView):
         if user_project_relation_existence:
             is_user_active = ProjectUtils.get_user_status_in_project(
                 user_id, project_id)
+            watcher_existence = WatcherModel.objects.filter(
+                user=user_id, issue=issue_id)
+            if len(watcher_existence.values()) > 0:
+                return Response({"error": f"`{user_id}` user is already watcher of `{issue_id}` issue."}, status=status.HTTP_400_BAD_REQUEST)
             if is_user_active:
                 serializer = WatcherSerializer(data=request.data)
                 if serializer.is_valid():
@@ -42,6 +46,7 @@ class WatcherView(APIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
                     return Response({"error": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+
             else:
                 return Response({'error': 'User is not active in this project'}, status=status.HTTP_400_BAD_REQUEST)
         else:

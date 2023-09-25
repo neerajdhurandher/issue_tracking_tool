@@ -18,12 +18,12 @@ class IssueView(APIView):
     def post(self, request):
         issue_data = request.data
 
-        if issue_data['title'] is None:
+        if not issue_data['title']:
             return Response({"title": "This field may not be blank"}, status=status.HTTP_400_BAD_REQUEST)
 
         sprint_id = issue_data['sprint']
 
-        if sprint_id is None:
+        if not sprint_id:
             return Response({"sprint": "This field may not be blank"}, status=status.HTTP_400_BAD_REQUEST)
 
         sprint_exits = Utils.get_object_by_id(SprintModel, sprint_id)
@@ -40,12 +40,16 @@ class IssueView(APIView):
     def get(self, request):
         page_no = request.GET.get('page')
         project_id = request.GET.get('project')
+        user_id = request.GET.get('assignee')
 
         if not page_no:
             return Response({"error": "Page param not passed"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not project_id:
+        if not project_id and not user_id:
             return Response({"error": "Project/Assignee param is not passed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not project_id and user_id:
+            return self.get_all_issue_of_user(user_id, request)
 
         project_exits = Utils.get_object_by_id(ProjectModel, project_id)
         if project_exits['status'] == False:
@@ -60,18 +64,19 @@ class IssueView(APIView):
             paginator = PageNumberPagination()
             paginator.page_size = pagination_limit
             all_issues = IssueModel.objects.filter(sprint=sprint)
+            if len(all_issues.values()) == 0:
+                return Response(
+                    {"error": "No issues present for this project"}, status=status.HTTP_404_NOT_FOUND)
             result_page = paginator.paginate_queryset(all_issues, request)
             serializer = IssueSerializer(result_page, many=True)
             serializer_data = serializer.data
             issues = paginator.get_paginated_response(serializer_data)
             current_page_issues = issues.data['results']
-            if len(current_page_issues) == 0:
-                raise Exception("No issues present for this project")
             return Response(current_page_issues, status=status.HTTP_200_OK)
         except NotFound as e:
             return Response({"error": "Page doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'error': str(e)}, status=500)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request, issue_id):
 
@@ -119,7 +124,7 @@ class IssueView(APIView):
         user_existence = Utils.get_object_by_id(UserModel, user_id)
         if user_existence['status'] is False:
             return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
         issue_sprint_id = issue_existence['data']['sprint_id']
 
@@ -141,7 +146,70 @@ class IssueView(APIView):
                 updated_issue = issue_update.__dict__
                 del updated_issue['_state']
                 return Response(updated_issue, status=status.HTTP_201_CREATED)
-                
+
             else:
                 return Response({'error': 'User is not active in this project'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'User is not a part of this project'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_all_issue_of_user(self, user_id, request):
+        user_existence = Utils.get_object_by_id(UserModel, user_id)
+        if user_existence['status'] == False:
+            return Response({"error": "User with this id doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+
+            paginator = PageNumberPagination()
+            paginator.page_size = pagination_limit
+            all_issues = IssueModel.objects.filter(assignee_id=user_id)
+            if len(all_issues.values()) == 0:
+                return Response(
+                    {"error": "No issues assigned to this assignee"}, status=status.HTTP_404_NOT_FOUND)
+            result_page = paginator.paginate_queryset(all_issues, request)
+            serializer = IssueSerializer(result_page, many=True)
+            serializer_data = serializer.data
+            issues = paginator.get_paginated_response(serializer_data)
+            current_page_issues = issues.data['results']
+            return Response(current_page_issues, status=status.HTTP_200_OK)
+        except NotFound as e:
+            return Response({"error": "Page doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            logger.info(
+                f"error while fetching issues of a user. Error : {error}")
+            return Response({"error": "error while fetching issues of a user"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MultipleQueryIssueList(APIView):
+
+    def get(self, request):
+        try:
+            data = request.GET
+
+            and_params = {}
+            for key in data:
+                if 'and_' in key:
+                    new_key = key.split("and_")[-1]
+                    if new_key == "project":
+                        new_key = "sprint__project__id"
+                    if new_key == "assignee":
+                        new_key = "assignee__id"
+                    and_params[new_key] = data[key]
+            queryset = IssueModel.objects.filter(
+                **and_params).select_related('assignee', 'sprint')
+
+            or_params = {}
+            for key in data:
+                if 'or_' in key:
+                    new_key = key.split("or_")[-1]
+                    if new_key == "project":
+                        new_key = "sprint__project__id"
+                    if new_key == "assignee":
+                        new_key = "assignee__id"
+                    or_params[new_key] = data[key]
+                    queryset = queryset | IssueModel.objects.filter(
+                        **or_params).select_related('assignee', 'sprint')
+
+            response = IssueSerializer(queryset, many=True)
+            return Response(response.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(
+                f"Exception while searching for issue using multiple parameter: {str(e)}")
+            return Response({"error": "Some problem occurred while searching for issues"}, status=400)
