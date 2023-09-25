@@ -52,7 +52,7 @@ class UserProjectRelation(BaseModel):
                 '-id').values_list('id', flat=True).first()
             if last_user_project_relation_id:
                 last_user_project_relation_id = int(
-                    last_user_project_relation_id.split('_')[2])
+                    last_user_project_relation_id.split('_')[4])
                 self.id = f'user_project_relation_id_{last_user_project_relation_id + 1}'
             else:
                 self.id = 'user_project_relation_id_1'
