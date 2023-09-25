@@ -13,10 +13,12 @@ logger = logging.getLogger(__name__)
 class UserView(APIView):
 
     def post(self, request):
-        """This API is to create a user.
+        """This function is used for create a user.
 
         Args:
             request : The request object contains user details 
+        Return:
+            Response: created user details
         """
 
         user_data = request.data
@@ -47,6 +49,14 @@ class UserView(APIView):
                 return Response(login_data['msg'], status=login_data['response_code'])
 
     def get(self, request, user_id):
+        """This function is used for get user of given id
+
+        Args:
+            user_id (str):
+
+        Returns:
+            Response : User detail of given user id
+        """
 
         user_exits_value = user_utils.check_user_existence(id=user_id)
 
@@ -59,6 +69,13 @@ class UserView(APIView):
             return Response(user_details, status=status.HTTP_200_OK)
 
     def delete(self, request, user_id):
+        """This function is to delete user of given id
+        Args:
+            request : None
+            user_id (str):
+        Returns:
+            Response: Delete operation status yes/error
+        """
         try:
             user_obj = UserModel.objects.get(id=user_id)
             user_obj.delete()
@@ -69,5 +86,10 @@ class UserView(APIView):
 
 class GetAllUserView(APIView):
     def get(self, request):
+        """This function is used for get all users
+
+        Returns:
+            Response: List of all users
+        """
         all_user = User.objects.all()
         return Response(all_user.values(), status=status.HTTP_200_OK)

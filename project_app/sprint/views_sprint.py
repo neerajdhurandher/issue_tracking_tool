@@ -15,6 +15,12 @@ class SprintView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """This function is to create a sprint
+        Args:
+            request : The request object contain details for create sprint
+        Return:
+            Response: created project details
+        """
         sprint_data = request.data
         project_id = sprint_data['project']
         if project_id is None:
@@ -38,6 +44,12 @@ class SprintView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request, sprint_id=None, *args, **kwargs):
+        """This function is to get all sprints
+        Args:
+            request : sprint_id/None
+        Return:
+            Response: List/Single sprint details
+        """
         if sprint_id:
             try:
                 sprint = SprintModel.objects.get(id=sprint_id)
@@ -50,6 +62,14 @@ class SprintView(APIView):
         return Response(all_sprints.values(), status=status.HTTP_200_OK)
 
     def put(self, request):
+        """This function is used for add given issues into the given sprint
+
+        Args:
+            request : It contain sprint id & list of issues
+
+        Returns:
+            Response: Put operation status True/error
+        """
         sprint_id = request.data.get('sprint')
         issue_data = request.data.get('issues')
 
@@ -86,10 +106,12 @@ class SprintView(APIView):
             return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, sprint_id):
-        """This API is to delete sprints of given sprint_id
+        """This function is to delete sprints of given sprint_id
         Args:
             request : None
             sprint_id (str): sprint id
+        Returns:
+            Response: Delete operation status yes/error
         """
         logger.info(f"sprint id {sprint_id}")
         try:

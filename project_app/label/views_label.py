@@ -15,6 +15,11 @@ class LabelView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """This function is used for create label of given data.
+
+        Returns:
+            Response: Details of created label
+        """
         issue_id = request.data.get('issue')
         label_text = request.data.get('label')
 
@@ -33,10 +38,23 @@ class LabelView(APIView):
             return Response({"error": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
+        """This function is used for get all labels.
+
+        Returns:
+            Response: List of labels
+        """
         all_labels = LabelModel.objects.all()
         return Response(all_labels.values(), status=status.HTTP_200_OK)
 
     def delete(self, request, label_id):
+        """This function is used for delete label of given id
+
+        Args:
+            label_id (str): label id for delete
+
+        Returns:
+            Response: Delete operation status yes/error
+        """
         try:
             label_obj = LabelModel.objects.get(
                 id=label_id)

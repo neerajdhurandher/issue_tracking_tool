@@ -21,6 +21,11 @@ class IssueView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """This function is used for create issue in given sprint.
+
+        Returns:
+            Response: created Issue details
+        """
         issue_data = request.data
 
         if not issue_data['title']:
@@ -43,6 +48,14 @@ class IssueView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
+        """This function is used for get Issue based on query params.
+
+        Args:
+            request (_type_): query params
+
+        Returns:
+            Response : Issue's details which are matching with query params. 
+        """
         page_no = request.GET.get('page')
         project_id = request.GET.get('project')
         user_id = request.GET.get('assignee')
@@ -84,6 +97,11 @@ class IssueView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request, issue_id):
+        """This function is used for update Issue's status & type filed for given issue id
+
+        Returns:
+            Response: Updated data of Issue.
+        """
 
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
         if issue_existence['status'] is False:
@@ -111,10 +129,12 @@ class IssueView(APIView):
             return Response(f"Error : {error}", status=525)
 
     def delete(self, request, issue_id):
-        """This API is to delete issue of given issue_id
+        """This function is to delete issue of given issue_id
         Args:
             request : None
             issue_id (str): issue id
+        Returns:
+            Response: Delete operation status yes/error
         """
         logger.info(issue_id)
         try:
@@ -125,7 +145,15 @@ class IssueView(APIView):
             return Response({"error": "The issue does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
     def assign_user_to_issue(self, issue_id, user_id):
+        """This function is used for assign a given user in given issue
 
+        Args:
+            issue_id (str):
+            user_id (str): 
+
+        Returns:
+            Response: Updated issue details
+        """
         user_existence = Utils.get_object_by_id(UserModel, user_id)
         if user_existence['status'] is False:
             return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -157,6 +185,15 @@ class IssueView(APIView):
         return Response({'error': 'User is not a part of this project'}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_all_issue_of_user(self, user_id, request):
+        """This function is used for get all issue that is assign to the given user
+
+        Args:
+            user_id (str)
+            request (request)
+
+        Returns:
+            Response: List of issues which are assigned to the given user
+        """
         user_existence = Utils.get_object_by_id(UserModel, user_id)
         if user_existence['status'] == False:
             return Response({"error": "User with this id doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
@@ -185,8 +222,13 @@ class IssueView(APIView):
 class MultipleQueryIssueList(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
+        """This function is used for retrieve Issue which matches with given query params
+
+        Returns:
+            Response: Issue details which matches with given query params
+        """
         try:
             data = request.GET
 
