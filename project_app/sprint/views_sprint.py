@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from ..utils import Utils
 from .sprint_serializer import SprintSerializer
-from ..models import Sprint as SprintModel, Project as ProjectModel
+from ..models import Sprint as SprintModel, Project as ProjectModel, Issue as IssueModel
 import logging
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,42 @@ class SprintView(APIView):
     def get(self, request):
         all_sprints = SprintModel.objects.all()
         return Response(all_sprints.values(), status=status.HTTP_200_OK)
+
+    def put(self, request):
+        sprint_id = request.data.get('sprint')
+        issue_data = request.data.get('issues')
+
+        if not sprint_id:
+            return Response({"error": "No sprint id passed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not issue_data:
+            return Response({"error": "No issue ids passed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        sprint_exits = Utils.get_object_by_id(SprintModel, sprint_id)
+
+        if sprint_exits['status'] == False:
+            return Response(sprint_exits['error'].format(
+                "sprint"), status=status.HTTP_404_NOT_FOUND)
+
+        issue_list = []
+
+        if isinstance(issue_data, str):
+            issue_list.append(issue_data)
+        elif isinstance(issue_data, list):
+            issue_list = issue_data
+        else:
+            return Response({"error": "invalid input"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            sprint_obj = SprintModel.objects.get(id=sprint_id)
+            for issue in issue_list:
+                issue_obj = IssueModel.objects.get(id=issue)
+                issue_obj.sprint = sprint_obj
+                issue_obj.save()
+            return Response({"success": "True"}, status=status.HTTP_200_OK)
+        except IssueModel.DoesNotExist as error:
+            return Response({"error": f"Issues don't exist for the given issue ids {issue}"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
 
 
 class SprintByIdView(APIView):
