@@ -1,8 +1,7 @@
-from django.contrib.sessions.models import Session
-from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
+from .models import User
+import bcrypt
 
 
 def generate_token(user):
@@ -11,9 +10,9 @@ def generate_token(user):
     Returns:
         token : encoded data
     """
-    token = Token.objects.create(user=user)
-    print(token.key)
-    return token.key
+    token, _ = Token.objects.get_or_create(user=user)
+    print(str(token))
+    return str(token)
 
 
 def validate_token(token):
@@ -29,23 +28,6 @@ def validate_token(token):
     """
     try:
         token = Token.objects.get(key=token)
-        user = token.user
-        return user
+        return True
     except Token.DoesNotExist:
         return False
-
-
-def authenticate_user(user, user_data):
-
-    print(user.password)
-    print(user_data['password'])
-
-    auth = authenticate(
-        username=user_data['username'], password=user_data['password'])
-
-    print(f"login authenticate value {auth}")
-    # TODO
-    # if auth is None:
-    #     print("password ok")
-    #     return False
-    return True
