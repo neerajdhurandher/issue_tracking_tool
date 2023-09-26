@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import ForeignKey
-from user_app.models import User
+from user_app.models import User, get_model_id
 
 
 class BaseModel(models.Model):
@@ -29,10 +29,8 @@ class Project(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_project_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_project_id = get_model_id(self.__class__, 2)
             if last_project_id:
-                last_project_id = int(last_project_id.split('_')[2])
                 self.id = f'project_id_{last_project_id + 1}'
             else:
                 self.id = 'project_id_1'
@@ -48,11 +46,8 @@ class UserProjectRelation(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_user_project_relation_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_user_project_relation_id = get_model_id(self.__class__, 4)
             if last_user_project_relation_id:
-                last_user_project_relation_id = int(
-                    last_user_project_relation_id.split('_')[4])
                 self.id = f'user_project_relation_id_{last_user_project_relation_id + 1}'
             else:
                 self.id = 'user_project_relation_id_1'
@@ -67,15 +62,10 @@ class Sprint(BaseModel):
     start_date = models.DateTimeField(default=None)
     end_date = models.DateTimeField(default=None)
 
-    # def __str__(self):
-    #     return self.name
-
     def save(self, *args, **kwargs):
         if not self.id:
-            last_sprint_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_sprint_id = get_model_id(self.__class__, 2)
             if last_sprint_id:
-                last_sprint_id = int(last_sprint_id.split('_')[2])
                 self.id = f'sprint_id_{last_sprint_id + 1}'
             else:
                 self.id = 'sprint_id_1'
@@ -101,10 +91,8 @@ class Issue(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_issue_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_issue_id = get_model_id(self.__class__, 2)
             if last_issue_id:
-                last_issue_id = int(last_issue_id.split('_')[2])
                 self.id = f'issue_id_{last_issue_id + 1}'
             else:
                 self.id = 'issue_id_1'
@@ -121,10 +109,8 @@ class Watcher(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_watcher_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_watcher_id = get_model_id(self.__class__, 2)
             if last_watcher_id:
-                last_watcher_id = int(last_watcher_id.split('_')[2])
                 self.id = f'watcher_id_{last_watcher_id + 1}'
             else:
                 self.id = 'watcher_id_1'
@@ -142,10 +128,8 @@ class Comment(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_comment_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_comment_id = get_model_id(self.__class__, 2)
             if last_comment_id:
-                last_comment_id = int(last_comment_id.split('_')[2])
                 self.id = f'comment_id_{last_comment_id + 1}'
             else:
                 self.id = 'comment_id_1'
@@ -161,10 +145,8 @@ class Label(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            last_label_id = self.__class__.objects.order_by(
-                '-id').values_list('id', flat=True).first()
+            last_label_id = get_model_id(self.__class__, 2)
             if last_label_id:
-                last_label_id = int(last_label_id.split('_')[2])
                 self.id = f'label_id_{last_label_id + 1}'
             else:
                 self.id = 'label_id_1'
