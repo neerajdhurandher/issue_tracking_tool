@@ -23,12 +23,15 @@ class LabelView(APIView):
         issue_id = request.data.get('issue')
         label_text = request.data.get('label')
 
-        if not issue_id or not label_text:
-            return Response({"issue/label field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
+        if not issue_id and not label_text:
+            return Response({"issue": "issue field may not be empty", "label": "label field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not label_text:
+            return Response({"label": "label field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
         if issue_existence['status'] is False:
-            return Response({'error': 'The issue does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'issue': 'The issue does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = LabelSerializer(data=request.data)
         if serializer.is_valid():
@@ -61,4 +64,4 @@ class LabelView(APIView):
             label_obj.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except LabelModel.DoesNotExist:
-            return Response({"error": "The label does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The label does not exist"}, status=status.HTTP_400_BAD_REQUEST)

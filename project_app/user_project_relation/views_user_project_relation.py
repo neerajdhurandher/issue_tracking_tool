@@ -35,7 +35,7 @@ class UserProjectRelationView(APIView):
         project_existence = Utils.get_object_by_id(ProjectModel, project_id)
 
         if project_existence['status'] is False:
-            return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'success': "False", 'error': 'The project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         if isinstance(user, str) or isinstance(user, int):
             user_list = [user]
@@ -75,7 +75,6 @@ class UserProjectRelationView(APIView):
             Response: List of user-project-relation or all user of given project id
         """
         project_id = id
-        logger.info(f"inside get {id}")
         if project_id is None:
             all = UserProjectRelationModel.objects.all()
             return Response(all.values(), status=status.HTTP_200_OK)
@@ -85,12 +84,17 @@ class UserProjectRelationView(APIView):
                 ProjectModel, project_id)
 
             if project_existence['status'] is False:
-                return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'The project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
             all_users_of_project = ProjectUtils.get_all_users_of_a_project(
                 project_id)
 
-            return Response(all_users_of_project.values(), status=status.HTTP_200_OK)
+            all_users_of_project_data = all_users_of_project.values()
+
+            if len(all_users_of_project_data) == 0:
+                return Response({"error": "No user assigned in this project"}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(all_users_of_project_data, status=status.HTTP_200_OK)
         except Exception as error:
             logger.info(
                 f"error while fetching user project relation data. Error : {error}")
@@ -115,12 +119,12 @@ class UserProjectRelationView(APIView):
         project_existence = Utils.get_object_by_id(ProjectModel, project_id)
 
         if project_existence['status'] is False:
-            return Response({'error': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'The project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         user_existence = Utils.get_object_by_id(UserModel, user_id)
 
         if user_existence['status'] is False:
-            return Response({'error': 'The user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'The user does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         if ProjectUtils.user_existence_in_project(user_id, project_id) == False:
             return Response({"error": "No User Project Relation present for this project"}, status=status.HTTP_400_BAD_REQUEST)
@@ -136,7 +140,7 @@ class UserProjectRelationView(APIView):
             user_project_relation.save()
             data = user_project_relation.__dict__
             del data['_state']
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_201_CREATED)
         except Exception as error:
             return Response(f"Error while changing user status in project. {error}", status=525)
 
@@ -156,7 +160,7 @@ class UserProjectRelationView(APIView):
             user_project_relation_obj.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except UserProjectRelationModel.DoesNotExist:
-            return Response({"error": "The user project relation does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The user project relation does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             logger.info(
                 f"error while deleting user project relation data. Error : {error}")

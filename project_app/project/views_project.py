@@ -25,7 +25,7 @@ class ProjectView(APIView):
         """
         project_details = request.data
 
-        if project_details['name'] is None or "":
+        if not project_details or not project_details['name']:
             return Response({'name': ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
 
         valid_date_form = Utils.validate_datetime_format(
@@ -56,7 +56,7 @@ class ProjectView(APIView):
                 del project_data['_state']
                 return Response(project_data, status=status.HTTP_200_OK)
             except ProjectModel.DoesNotExist:
-                return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": "The project does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, project_id):
         """This function is to delete projects of given project_id
@@ -72,4 +72,4 @@ class ProjectView(APIView):
             project.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except ProjectModel.DoesNotExist:
-            return Response({"error": "The project does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The project does not exist"}, status=status.HTTP_400_BAD_REQUEST)

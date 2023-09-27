@@ -26,11 +26,11 @@ class CommentView(APIView):
         comment_text = request.data.get('comment')
 
         if not issue_id or not user_id or not comment_text:
-            return Response({"issue/user/comment field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "issue/user/comment field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
         if issue_existence['status'] is False:
-            return Response({'error': 'The issue does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'The issue does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_sprint_id = issue_existence['data']['sprint_id']
         if issue_sprint_id is None:
@@ -80,4 +80,4 @@ class CommentView(APIView):
             comment_obj.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except CommentModel.DoesNotExist:
-            return Response({"error": "The comment does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The comment does not exist"}, status=status.HTTP_400_BAD_REQUEST)
