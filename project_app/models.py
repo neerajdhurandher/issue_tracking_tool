@@ -24,9 +24,6 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
     project_owner = models.CharField(max_length=100, null=True, default=None)
 
-    def __str__(self):
-        return self.name
-
     def save(self, *args, **kwargs):
         if not self.id:
             last_project_id = get_model_id(self.__class__, 2)
@@ -85,9 +82,6 @@ class Issue(BaseModel):
                             choices=issue_type_choice)
     status = models.CharField(
         max_length=20, null=False, choices=issue_status_choice)
-
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if not self.id:

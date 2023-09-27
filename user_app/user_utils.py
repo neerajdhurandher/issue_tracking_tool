@@ -53,4 +53,4 @@ class UserUtils():
             user_obj.save()
             return {'status': True, 'msg': token, 'response_code': status.HTTP_200_OK}
         else:
-            return {'status': False, 'msg': "invalid password.", 'response_code': status.HTTP_401_UNAUTHORIZED}
+            return {'status': False, 'msg': "invalid password.", 'response_code': status.HTTP_400_BAD_REQUEST}

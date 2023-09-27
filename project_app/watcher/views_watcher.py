@@ -25,13 +25,12 @@ class WatcherView(APIView):
         """
         issue_id = request.data.get('issue')
         user_id = request.data.get('user')
-
-        if not issue_id or not user_id:
-            return Response({"issue/user field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
+        if not (issue_id or user_id or isinstance(issue_id, str) or isinstance(user_id, str)):
+            return Response({"error": "issue/user field may not be empty"}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_existence = Utils.get_object_by_id(IssueModel, issue_id)
         if issue_existence['status'] is False:
-            return Response({'error': 'The issue does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'The issue does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_sprint_id = issue_existence['data']['sprint_id']
         if issue_sprint_id is None:
@@ -64,8 +63,6 @@ class WatcherView(APIView):
         else:
             return Response({'error': 'User is not a part of this project'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response("ok", 200)
-
     def get(self, request):
         """This function is used for get all watcher list
 
@@ -87,11 +84,8 @@ class WatcherView(APIView):
         user_id = request.GET.get('user')
         issue_id = request.GET.get('issue')
 
-        if not user_id:
-            return Response({"error": "User param not passed"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not issue_id:
-            return Response({"error": "Issue param is not passed"}, status=status.HTTP_400_BAD_REQUEST)
+        if not issue_id or not user_id or not isinstance(issue_id, str) or not isinstance(user_id, str):
+            return Response({"issue": "issue param not passed", "user": "User param not passed"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             watcher_obj = WatcherModel.objects.get(
@@ -103,9 +97,11 @@ class WatcherView(APIView):
             watcher_obj.save()
             data = watcher_obj.__dict__
             del data['_state']
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_201_CREATED)
+        except WatcherModel.DoesNotExist as error:
+            return Response({"error": "watcher with id not exits."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
-            return Response(f"Error while changing user's watching status in issue. {error}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": f"Error while changing user's watching status in issue. {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, watcher_id):
         """This function is to delete watcher of given sprint_id
@@ -121,4 +117,4 @@ class WatcherView(APIView):
             watcher_obj.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except WatcherModel.DoesNotExist:
-            return Response({"error": "The watcher does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The watcher does not exist"}, status=status.HTTP_400_BAD_REQUEST)

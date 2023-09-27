@@ -23,7 +23,7 @@ urlpatterns = [
     path("search_issues", MultipleQueryIssueList.as_view(),
          name="Multiple query search Issue"),
     path("watchers", WatcherView.as_view(), name="Watcher"),
-    path("watchers/<str:watcher_id>", WatcherView.as_view(), name="watcher by id"),
+    path("watcher/<str:watcher_id>", WatcherView.as_view(), name="watcher by id"),
     path("comments", CommentView.as_view(), name="Comment"),
     path("comment/<str:comment_id>", CommentView.as_view(), name="comment by id"),
     path("labels", LabelView.as_view(), name="Label"),

@@ -23,12 +23,12 @@ class SprintView(APIView):
         """
         sprint_data = request.data
         project_id = sprint_data['project']
-        if project_id is None:
-            return Response({"project": "This field may not be blank"}, status=status.HTTP_400_BAD_REQUEST)
+        if not project_id:
+            return Response(sprint_data, status=status.HTTP_400_BAD_REQUEST)
 
         project_exits = Utils.get_object_by_id(ProjectModel, project_id)
         if project_exits['status'] == False:
-            return Response({"error": project_exits['error'].format("project")}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"project": project_exits['error'].format("project")}, status=status.HTTP_400_BAD_REQUEST)
 
         if Utils.validate_datetime_format(
                 sprint_data['start_date']) == False:
@@ -57,7 +57,7 @@ class SprintView(APIView):
                 del sprint_data['_state']
                 return Response(sprint_data, status=status.HTTP_200_OK)
             except SprintModel.DoesNotExist:
-                return Response({"error": "The sprint does not exist"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": "The sprint does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         all_sprints = SprintModel.objects.all()
         return Response(all_sprints.values(), status=status.HTTP_200_OK)
 
@@ -83,7 +83,7 @@ class SprintView(APIView):
 
         if sprint_exits['status'] == False:
             return Response({"error": sprint_exits['error'].format(
-                "sprint")}, status=status.HTTP_404_NOT_FOUND)
+                "sprint")}, status=status.HTTP_400_BAD_REQUEST)
 
         issue_list = []
 
@@ -99,11 +99,11 @@ class SprintView(APIView):
                 issue_obj = IssueModel.objects.get(id=issue)
                 issue_obj.sprint = sprint_obj
                 issue_obj.save()
-            return Response({"success": "True"}, status=status.HTTP_200_OK)
+            return Response({"success": "True"}, status=status.HTTP_201_CREATED)
         except IssueModel.DoesNotExist as error:
-            return Response({"error": f"Issues don't exist for the given issue ids {issue}"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"Issues don't exist for the given issue ids {issue}"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
-            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, sprint_id):
         """This function is to delete sprints of given sprint_id
@@ -119,4 +119,4 @@ class SprintView(APIView):
             sprint.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except SprintModel.DoesNotExist:
-            return Response({"error": "The sprint does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The sprint does not exist"}, status=status.HTTP_400_BAD_REQUEST)

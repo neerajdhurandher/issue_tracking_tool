@@ -23,15 +23,12 @@ class UserView(APIView):
 
         user_data = request.data
 
-        logger.info(f"user input : {user_data}")
         user_obj = None
 
         try:
             user_obj = UserModel.objects.get(username=user_data['username'])
         except UserModel.DoesNotExist:
             logger.info("user not exist")
-
-        logging.info(f"user exits {user_obj}")
 
         if user_obj is None:
             user_create_res = user_utils.create_user(request.data)
@@ -62,7 +59,7 @@ class UserView(APIView):
 
         if user_exits_value is None:
             return Response({"error": "User with this id doesn't exist"},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_400_BAD_REQUEST)
         else:
             user_details = user_exits_value.__dict__
             del user_details['_state']
@@ -81,7 +78,7 @@ class UserView(APIView):
             user_obj.delete()
             return Response({"success": "yes"}, status=status.HTTP_200_OK)
         except UserModel.DoesNotExist:
-            return Response({"error": "The user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "The user does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetAllUserView(APIView):
