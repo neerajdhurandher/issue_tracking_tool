@@ -1,0 +1,1079 @@
+{
+	"info": {
+		"_postman_id": "22a9f733-b010-4428-9ed8-3b8d9ff4096a",
+		"name": "Issue tracking tool",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19955586"
+	},
+	"item": [
+		{
+			"name": "sprint",
+			"item": [
+				{
+					"name": "Create Sprint",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"project\":\"project_id_1\",\r\n  \"label\": \"Example Label 1\",\r\n  \"start_date\":\"2022-09-08 10:10:10\",\r\n  \"end_date\":\"2022-09-22 10:10:10\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/sprints",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"sprints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all sprints",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/sprints",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"sprints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get sprint by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/sprint/sprint_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"sprint",
+								"sprint_id_1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Sprint by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/sprint/sprint_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"sprint",
+								"sprint_id_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Move issue in sprint",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"sprint\":\"sprint_id_1\",\r\n  \"issues\":[\"issue_id_1\"] \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/sprints",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"sprints"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Issue",
+			"item": [
+				{
+					"name": "Create Issue",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"title\": \"Issue 6 for DE\", \r\n  \"type\": \"B\", \r\n  \"sprint\": \"sprint_id_1\", \r\n  \"status\": \"C\" \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/issues",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update  Issue status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/issue/issue_id_1?status=True",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issue",
+								"issue_id_1"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "True"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get issue of project",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/issues?page=1&project=project_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "project",
+									"value": "project_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get issue of a user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/issues?page=1&assignee=user_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "assignee",
+									"value": "user_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete issue by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/issue/issue_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issue",
+								"issue_id_1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign issue to user",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/issue/issue_id_1?assignee=user_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"issue",
+								"issue_id_1"
+							],
+							"query": [
+								{
+									"key": "assignee",
+									"value": "user_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Multi param Issue",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/search_issues?and_type=B&and_project=project_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"search_issues"
+							],
+							"query": [
+								{
+									"key": "and_type",
+									"value": "B"
+								},
+								{
+									"key": "and_project",
+									"value": "project_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"pm.collectionVariables.set(\"token\", res.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testinguser228028\",\r\n    \"password\": \"123\",\r\n    \"email\": \"mock_username_1@xyz.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/user",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/user/user_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"user_id_1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/user/user_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"user_id_2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Project",
+			"item": [
+				{
+					"name": "Create Project",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Project: Example Project 1\",\r\n    \"start_date\": \"2022-09-08 09:10:10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/projects",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all projects",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/projects",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project by name",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/project/project_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"project_id_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get project by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/project/project_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"project_id_1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Project Relation",
+			"item": [
+				{
+					"name": "Create user project relation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"project\": \"project_id_1\",  \r\n    \"user\": [\"user_id_1\"]\r\n}   ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/userprojectrelation",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"userprojectrelation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all user project relations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/userprojectrelation",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"userprojectrelation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all user of a project",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/userprojectrelation/project_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"userprojectrelation",
+								"project_id_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user status in project",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/userprojectrelation?project=project_id_1&user=user_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"userprojectrelation"
+							],
+							"query": [
+								{
+									"key": "project",
+									"value": "project_id_1"
+								},
+								{
+									"key": "user",
+									"value": "user_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user project relation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/userprojectrelation/user_project_relation_id_3",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"userprojectrelation",
+								"user_project_relation_id_3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Watcher",
+			"item": [
+				{
+					"name": "create watcher",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"issue\":\"issue_id_1\", \r\n  \"user\":\"user_id_1\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/watchers",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"watchers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all watchers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/watchers",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"watchers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify watch status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/watchers?user=user_id_1&issue=issue_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"watchers"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "user_id_1"
+								},
+								{
+									"key": "issue",
+									"value": "issue_id_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete watcher",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/watchers/watcher_id_1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"watchers",
+								"watcher_id_1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comment",
+			"item": [
+				{
+					"name": "create comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"issue\":\"issue_id_1\", \r\n  \"user\":\"user_id_1\",\r\n  \"comment\":\"nice\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/comments",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/comments",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete comment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/comment/comment_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"comment",
+								"comment_id_2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"item": [
+				{
+					"name": "create label",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"issue\":\"issue_id_1\",\r\n  \"label\":\"This is label 2\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/labels",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"labels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all labels",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/labels",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"labels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete label",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/label/label_id_2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"label",
+								"label_id_2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "localhost",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
